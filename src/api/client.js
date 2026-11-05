@@ -1,17 +1,10 @@
 import axios from 'axios';
 
-export const getApiBaseUrl = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-  if (typeof window !== 'undefined' && window.location.hostname.includes('ihelp.digital')) {
-    return 'https://api.ihelp.digital/api/admin';
-  }
-  return 'http://localhost:5000/api/admin';
-};
+// All API and Server URLs are strictly loaded from environment variables (.env)
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const SERVER_HOST = import.meta.env.VITE_SERVER_URL || (BASE_URL ? BASE_URL.replace(/\/api\/admin\/?$/, '') : '');
+export const APP_URL = import.meta.env.VITE_APP_URL;
 
-export const BASE_URL = getApiBaseUrl();
-export const SERVER_HOST = BASE_URL.replace(/\/api\/admin\/?$/, '');
 const TOKEN_KEY = 'ihelp_admin_token';
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
