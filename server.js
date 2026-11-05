@@ -1,4 +1,3 @@
-
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
@@ -7,7 +6,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DIST_DIR = path.join(__dirname, 'dist');
-const PORT = process.env.PORT || 5001;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -26,7 +24,7 @@ const MIME_TYPES = {
   '.webp': 'image/webp'
 };
 
-const server = http.createServer((req, res) => {
+const handleRequest = (req, res) => {
   const urlPath = req.url.split('?')[0];
   let safePath = path.normalize(urlPath).replace(/^(\.\.[\/\\])+/, '');
   let filePath = path.join(DIST_DIR, safePath);
@@ -64,8 +62,22 @@ const server = http.createServer((req, res) => {
       });
     }
   });
-});
+};
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 iHelp Admin Frontend running on http://0.0.0.0:${PORT}`);
+// Listen on both process.env.PORT (e.g. 8080) and 5001 so Railway's domain mapping works either way
+const rawPorts = [
+  process.env.PORT ? parseInt(process.env.PORT, 10) : null,
+  5001
+].filter((p) => p && !isNaN(p));
+
+const ports = Array.from(new Set(rawPorts));
+
+ports.forEach((port) => {
+  const server = http.createServer(handleRequest);
+  server.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 iHelp Admin Frontend running on http://0.0.0.0:${port}`);
+  });
+  server.on('error', (err) => {
+    console.warn(`⚠️ Port ${port} notice:`, err.message);
+  });
 });
