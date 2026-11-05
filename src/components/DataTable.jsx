@@ -1,12 +1,9 @@
 import { ArrowUp, ArrowDown, Pencil, Trash2, Inbox, ExternalLink, FileText, Image as ImageIcon } from 'lucide-react';
 import StatusPill from './StatusPill';
 import { formatCell, truncate } from '../utils/format';
+import { SERVER_HOST } from '../api/client';
 
 const STATUS_KEYS = new Set(['status', 'role']);
-
-// Extract host from VITE_API_BASE_URL (defaults to http://localhost:5000)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/admin';
-const SERVER_HOST = API_BASE.replace(/\/api\/admin\/?$/, '');
 
 function isFileField(col, raw) {
   if (typeof raw !== 'string' || !raw.trim()) return false;
